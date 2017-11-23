@@ -28,6 +28,10 @@ static int bid=0;
 static mgos_timer_id TFT_Touch_read_timer_id;
 
 
+static int _lcd_width = DEFAULT_TFT_DISPLAY_WIDTH;
+static int _lcd_height = DEFAULT_TFT_DISPLAY_HEIGHT;
+static int _lcd_orientation = PORTRAIT;
+
 
 // ============= Touch panel functions =========================================
 
@@ -183,10 +187,10 @@ int TFT_read_touch(int *x, int* y, uint8_t raw)
 	if (((xmax - xmin) <= 0) || ((ymax - ymin) <= 0)) return 0;
 
     #if USE_TOUCH == TOUCH_TYPE_XPT2046
-		int width = _width;
-		int height = _height;
+		int width = _lcd_width;
+		int height = _lcd_height;
 
-		switch (orientation) {
+		switch (_lcd_orientation) {
 			case PORTRAIT:
 				X = xmax-offset_x;
 				Y = Y;
@@ -243,7 +247,7 @@ int TFT_read_touch(int *x, int* y, uint8_t raw)
 		if (Y < 0) Y = 0;
 		if (Y > height-1) Y = height-1;
 
-		switch (orientation) {
+		switch (_lcd_orientation) {
 			case PORTRAIT_FLIP:
 				X = width - X - 1;
 				Y = height - Y - 1;
@@ -320,8 +324,9 @@ bool TFT_Touch_intr_init(void)
 {
 	const int pin = mgos_sys_config_get_tft_t_irq_pin();
 
-	if (-1 != pin)
-	{
+	printf("==== TFT_Touch_intr_init: init touch intr\r\n");
+
+	if (-1 != pin) {
 		LOG(LL_INFO, ("Set touch intr handler for pin '%d'", pin));
 		mgos_gpio_set_mode(pin, MGOS_GPIO_MODE_INPUT);
 		mgos_gpio_set_pull(pin, MGOS_GPIO_PULL_NONE);
@@ -334,7 +339,20 @@ bool TFT_Touch_intr_init(void)
 
 // Mongoose-OS init
 //
-bool mgos_tft_touch_init(void) {
+bool mgos_tft_touch_init(void)
+{
+	_lcd_height = mgos_sys_config_get_tft_height();
+	_lcd_width = mgos_sys_config_get_tft_width();
+	_lcd_orientation = mgos_sys_config_get_tft_orientation();
+
+	printf("==== mgos_tft_touch_init: _\r\n");
+
+	TFT_Touch_intr_init();
+
+#if USE_TOUCH
+    gpio_pad_select_gpio(PIN_NUM_TCS);
+    gpio_set_direction(PIN_NUM_TCS, GPIO_MODE_OUTPUT);
+#endif
 
 	return true;
 }
