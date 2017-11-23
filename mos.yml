@@ -1,0 +1,47 @@
+author: Miska Peippo <18567301+peimis@users.noreply.github.com>
+type: lib
+description: Mongoose-OS ESP32 Touch lib
+version: 0.1
+
+sources:
+  - src
+
+includes:
+  - include
+
+# filesystem:
+#   - fs
+
+config_schema:
+  - ["touch", "o", {title: "Touchscreen custom settings"}]
+  - ["touch.irq_pin", "i", 13, {title: "Touch IRQ pin"}]
+  - ["touch.cs_pin", "i", 27, {title: "Touch CS pin"}]
+#
+  - ["touch.type", "i", 0, {title: "Touchscreen type"}]
+#
+  - ["touch.width", "i", 320, {title: "TFT width"}]
+  - ["touch.height", "i", 240, {title: "TFT height"}]
+# 0: PORTRAIT
+# 1: LANDSCAPE
+# 2: PORTRAIT_FLIP
+# 3: LANDSCAPE_FLIP
+  - ["touch.orientation", "i", 3, {title: "Orientation  0: PORTRAIT  1: LANDSCAPE  2: PORTRAIT_FLIP  3: LANDSCAPE_FLIP"}]
+#
+  - ["touch.calx", "i", 0, {title: "Touch X calibration value"}]
+  - ["touch.caly", "i", 0, {title: "Touch Y calibration value"}]
+#
+  - ["touch.max_rd_speed", "i", 8000000, {title: "maximum spi clock for display read operations"}]
+
+
+libs:
+  - name: mos-lobo-spi
+  - name: mos-lobo-tft
+#  - origin: https://github.com/peimis/mos-lobo-spi
+
+tags:
+  - c
+  - js
+  - spi
+  - hw
+
+manifest_version: 2017-09-29
